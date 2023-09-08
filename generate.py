@@ -69,9 +69,10 @@ def fill_in_gaps(context):
 
     logger.debug("Original context: %s", context)
 
-    services = defaultdict(str, context["environment"]["services"])
-    integrations = defaultdict(list, context["environment"]["integrations"])
-    integration_endpoints = set(context["environment"]["integration_endpoints"])
+    environment = defaultdict(dict, context["environment"])
+    services = defaultdict(str, environment["services"])
+    integrations = defaultdict(list, environment["integrations"])
+    integration_endpoints = set(environment["integration_endpoints"])
 
     # If we've asked for Kafka Connect service but there's no Connect integration for Kafka, add one
     if "kafka_connect" in services:
