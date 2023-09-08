@@ -8,7 +8,11 @@ resource "aiven_{{ service_type }}" "{{ prefix | replace("-", "_")}}_{{ service_
   {% endif %}
   {{ service_type }}_user_config {
     {% if service_type in version_numbers %}
-    {{ service_type }}_version         = "{{ version_numbers[service_type] }}"
+    {{ service_type }}_version = "{{ version_numbers[service_type] }}"
+    {% endif %}
+    {% if service_type == 'kafka' %}
+    kafka_rest = true
+    schema_registry = true
     {% endif %}
     {% if environment.configs is defined and environment.configs[service_type] is defined %}
     {{ service_type }} {
