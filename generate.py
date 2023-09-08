@@ -14,9 +14,10 @@ default_service_plans = {
     "flink": "business-4",
     "influxdb": "startup-4",
     "opensearch": "startup-4",
+    "grafana": "startup-1",
 }
 
-default_versions = {"flink": "1.16", "kafka": "3.5", "pg": "14"}
+default_versions = {"flink": "1.16", "kafka": "3.5", "pg": "14", "m3db": "1.5"}
 
 
 def is_valid_file(path):
@@ -41,13 +42,23 @@ def validate(context):
     if not "environment" in context:
         logger.fatal("No environment specified")
         sys.exit(1)
-    if not "services" in context["environment"] or not isinstance(
-        context["environment"]["services"], dict
-    ):
+    environment = context["environment"]
+    if not "project" in environment:
+        logger.fatal("No environment specified")
+        sys.exit(1)
+    if not "services" in environment or not isinstance(environment["services"], dict):
         logger.fatal("No services specified")
         sys.exit(1)
-    if not "integrations" in context["environment"]:
+    if not "integrations" in environment:
         logger.warning("No integrations specified")
+    if "networking" in environment and environment["networking"] not in [
+        "public",
+        "vpc",
+        "privatelink",
+    ]:
+        logger.warning(
+            "Ignoring invalid for 'networking' - must be one of 'public', 'vpc', 'privatelink'"
+        )
     return True
 
 
@@ -94,13 +105,26 @@ def fill_in_gaps(context):
                 integrations[flink_candidate_service].append("flink")
 
     # If any service asks for metrics integration but there's no InfluxDB or M3DB service, add an InfluxDB
+    metrics_integration_requested = False
     for service in services:
-        if "metrics" in integrations[service]:
-            if not "influxdb" in services and not "m3db" in services:
-                services["influxdb"] = default_service_plans["influxdb"]
-                break
+        if service in integrations and "metrics" in integrations[service]:
+            metrics_integration_requested = True
+            break
 
-    # If any service asks for metrics integration but there's no InfluxDB or M3DB service, add an InfluxDB
+    if "influxdb" in services:
+        context["metrics_database"] = "influxdb"
+    elif "m3db" in services:
+        context["metrics_database"] = "m3db"
+
+    if metrics_integration_requested:
+        if "metrics_database" not in context:
+            services["influxdb"] = default_service_plans["influxdb"]
+            context["metrics_database"] = "influxdb"
+        if not "grafana" in services:
+            services["grafana"] = default_service_plans["grafana"]
+            integrations["grafana"] = ["dashboard"]
+
+    # If any service asks for logs integration but there's no OpenSearch service, add an OpenSearch
     for service in services:
         if service in integrations and "logs" in integrations[service]:
             if not "opensearch" in services:

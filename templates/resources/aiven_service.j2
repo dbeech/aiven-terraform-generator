@@ -21,7 +21,7 @@ resource "aiven_{{ service_type }}" "{{ prefix | replace("-", "_")}}_{{ service_
     {% endfor %}
     }
     {% endif %}
-    {% if service_type != 'flink' %}
+    {% if service_type != 'flink' and service_type != 'm3db' %}
     public_access {
       {{ service_type }} = true
     }

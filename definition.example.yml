@@ -5,7 +5,7 @@ environment:
   services:
     kafka: business-8
     pg: business-8
-    clickhouse: business-4
+    clickhouse: business-16
   integrations:
     kafka:
       - logs

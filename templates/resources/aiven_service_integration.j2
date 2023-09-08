@@ -2,8 +2,8 @@ resource "aiven_service_integration" "{{ prefix | replace("-", "_")}}_integratio
   project                  = "{{ environment.project }}"
   integration_type         = "{{ integration_type }}"
   source_service_name      = aiven_{{ service }}.{{ prefix | replace("-", "_")}}_{{ service }}.service_name
-  {% if integration_type == "metrics" %}
-  destination_service_name = aiven_influxdb.{{ prefix | replace("-", "_")}}_influxdb.service_name
+  {% if integration_type == "metrics" or integration_type == "dashboard" %}
+  destination_service_name = aiven_{{ metrics_database }}.{{ prefix | replace("-", "_")}}_{{ metrics_database }}.service_name
   {% elif integration_type == "logs" %}
   destination_service_name = aiven_opensearch.{{ prefix | replace("-", "_")}}_opensearch.service_name
   {% elif integration_type == "flink" or integration_type == "kafka_connect" %}
