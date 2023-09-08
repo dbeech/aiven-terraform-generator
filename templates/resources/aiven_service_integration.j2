@@ -8,5 +8,7 @@ resource "aiven_service_integration" "{{ prefix | replace("-", "_")}}_integratio
   destination_service_name = aiven_opensearch.{{ prefix | replace("-", "_")}}_opensearch.service_name
   {% elif integration_type == "flink" or integration_type == "kafka_connect" %}
   destination_service_name = aiven_{{ integration_type }}.{{ prefix | replace("-", "_")}}_{{ integration_type }}.service_name
+  {% elif integration_type == "prometheus" or integration_type == "jolokia" %}
+  destination_endpoint_id = aiven_service_integration_endpoint.{{ prefix | replace("-", "_")}}_integration_endpoint_{{ integration_type }}.id
   {% endif %}
 }

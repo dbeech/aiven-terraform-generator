@@ -26,3 +26,8 @@ provider "aiven" {
 
 {% endfor %}
 {% endfor %}
+{% for integration_endpoint_type in environment.integration_endpoints %}
+
+{% include 'resources/aiven_service_integration_endpoint.j2' %}
+
+{% endfor %}

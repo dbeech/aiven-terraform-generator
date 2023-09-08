@@ -1,7 +1,10 @@
 import argparse
 import logging
 import os
+import random
+import string
 import sys
+from collections import defaultdict
 
 import yaml
 from jinja2 import Environment, FileSystemLoader
@@ -66,16 +69,9 @@ def fill_in_gaps(context):
 
     logger.debug("Original context: %s", context)
 
-    integrations = (
-        context["environment"]["integrations"]
-        if "integrations" in context["environment"]
-        else dict()
-    )
-    services = context["environment"]["services"]
-
-    for service in services:
-        if service not in integrations:
-            integrations[service] = list()
+    services = defaultdict(str, context["environment"]["services"])
+    integrations = defaultdict(list, context["environment"]["integrations"])
+    integration_endpoints = set(context["environment"]["integration_endpoints"])
 
     # If we've asked for Kafka Connect service but there's no Connect integration for Kafka, add one
     if "kafka_connect" in services:
@@ -92,7 +88,6 @@ def fill_in_gaps(context):
     ):
         if "flink" in integrations[flink_candidate_service] and not "flink" in services:
             services["flink"] = default_service_plans["flink"]
-            integrations["flink"] = list()
             break
 
     # If we've asked for Flink service (or just added it), add all eligible integrations
@@ -131,9 +126,31 @@ def fill_in_gaps(context):
                 services["opensearch"] = default_service_plans["opensearch"]
                 break
 
+    # If any service asks for Prometheus or Jolokia integration but there's no endpoint, add that
+    for service in services:
+        if (
+            "prometheus" in integrations[service]
+            and not "prometheus" in integration_endpoints
+        ):
+            integration_endpoints.add("prometheus")
+        if (
+            "jolokia" in integrations[service]
+            and not "jolokia" in integration_endpoints
+        ):
+            integration_endpoints.add("jolokia")
+
+    # Save the updated context back
+    context["environment"]["services"] = dict(services)
+    context["environment"]["integrations"] = dict(integrations)
+    context["environment"]["integration_endpoints"] = list(integration_endpoints)
     logger.debug("Enriched context: %s", context)
 
     return context
+
+
+def generate_random_string(length=8):
+    allowed_chars = string.ascii_lowercase + string.digits
+    return "".join(random.choice(allowed_chars) for _ in range(length))
 
 
 def main():
@@ -176,6 +193,7 @@ def main():
     env = Environment(
         loader=FileSystemLoader("templates"), trim_blocks=True, lstrip_blocks=True
     )
+    env.globals["generate_random_string"] = generate_random_string
 
     # Load the YAML file to get the context data
     logger.info("Loading context from %s", args.input)

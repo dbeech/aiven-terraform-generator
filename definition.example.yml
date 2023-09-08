@@ -12,6 +12,9 @@ environment:
       - metrics
       - kafka_connect
       - flink
+      - prometheus
+  integration_endpoints:
+    - jolokia
   configs:
     kafka:
       auto_create_topics_enable: false
