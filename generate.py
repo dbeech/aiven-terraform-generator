@@ -84,21 +84,17 @@ def fill_in_gaps(context):
         services["kafka_connect"] = default_service_plans["kafka_connect"]
 
     # If a service asks for Flink integration but there's no Flink service, add one
-    for flink_candidate_service in {"kafka", "pg", "opensearch"}.intersection(
-        services.keys()
-    ):
-        if "flink" in integrations[flink_candidate_service] and not "flink" in services:
+    flink_candidate_services = {"kafka", "pg", "opensearch"}
+    for service in flink_candidate_services.intersection(services.keys()):
+        if "flink" in integrations[service] and not "flink" in services:
             services["flink"] = default_service_plans["flink"]
             break
 
     # If we've asked for Flink service (or just added it), add all eligible integrations
     if "flink" in services:
-        for flink_candidate_service in ["kafka", "pg", "opensearch"]:
-            if (
-                flink_candidate_service in integrations
-                and not "flink" in integrations[flink_candidate_service]
-            ):
-                integrations[flink_candidate_service].append("flink")
+        for service in flink_candidate_services:
+            if service in integrations and not "flink" in integrations[service]:
+                integrations[service].append("flink")
 
     # If any service asks for metrics integration but there's no InfluxDB or M3DB service, add an InfluxDB
     metrics_integration_requested = False

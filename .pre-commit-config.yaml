@@ -22,3 +22,12 @@ repos:
       - id: isort
         args: ["--profile", "black", "--filter-files","--section-default=THIRDPARTY","-o=config"]
         name: Isort
+
+  - repo: local
+    hooks:
+      - id: pytest-check
+        name: pytest-check
+        entry: pytest
+        language: system
+        pass_filenames: false
+        always_run: true
