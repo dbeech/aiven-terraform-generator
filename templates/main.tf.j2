@@ -1,0 +1,28 @@
+variable "aiven_api_token" {}
+
+terraform {
+  required_providers {
+    aiven = {
+      source = "aiven/aiven"
+      version = ">= 4.0.0, < 5.0.0"
+    }
+  }
+}
+
+provider "aiven" {
+  api_token = var.aiven_api_token
+}
+
+{% include 'resources/aiven_project_vpc.j2' %}
+{% for service_type in environment.services %}
+
+{% include 'resources/aiven_service.j2' %}
+
+{% endfor %}
+{% for service in environment.integrations %}
+{% for integration_type in environment.integrations[service] %}
+
+{% include 'resources/aiven_service_integration.j2' %}
+
+{% endfor %}
+{% endfor %}

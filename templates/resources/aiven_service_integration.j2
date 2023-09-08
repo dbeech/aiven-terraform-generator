@@ -1,0 +1,12 @@
+resource "aiven_service_integration" "{{ prefix | replace("-", "_")}}_integration_{{ service }}_{{ integration_type }}" {
+  project                  = "{{ environment.project }}"
+  integration_type         = "{{ integration_type }}"
+  source_service_name      = aiven_{{ service }}.{{ prefix | replace("-", "_")}}_{{ service }}.service_name
+  {% if integration_type == "metrics" %}
+  destination_service_name = aiven_influxdb.{{ prefix | replace("-", "_")}}_influxdb.service_name
+  {% elif integration_type == "logs" %}
+  destination_service_name = aiven_opensearch.{{ prefix | replace("-", "_")}}_opensearch.service_name
+  {% elif integration_type == "flink" or integration_type == "kafka_connect" %}
+  destination_service_name = aiven_{{ integration_type }}.{{ prefix | replace("-", "_")}}_{{ integration_type }}.service_name
+  {% endif %}
+}

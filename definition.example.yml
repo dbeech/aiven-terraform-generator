@@ -1,0 +1,17 @@
+environment:
+  project: dbeech-demo
+  cloud: aws-eu-central-1
+  networking: vpc
+  services:
+    kafka: business-8
+    pg: business-8
+    clickhouse: business-4
+  integrations:
+    kafka:
+      - logs
+      - metrics
+      - kafka_connect
+      - flink
+  configs:
+    kafka:
+      auto_create_topics_enable: false

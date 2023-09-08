@@ -1,0 +1,30 @@
+resource "aiven_{{ service_type }}" "{{ prefix | replace("-", "_")}}_{{ service_type }}" {
+  project                 = "{{ environment.project }}"
+  cloud_name              = "{{ environment.cloud }}"
+  plan                    = "{{ environment.services[service_type] }}"
+  service_name            = "{{ prefix }}-{{ service_type | replace("_", "-") }}"
+  {% if environment.networking == 'vpc' or environment.networking == 'privatelink' %}
+  project_vpc_id          = aiven_project_vpc.{{ prefix | replace("-", "_")}}_project_vpc.id
+  {% endif %}
+  {{ service_type }}_user_config {
+    {% if service_type in version_numbers %}
+    {{ service_type }}_version         = "{{ version_numbers[service_type] }}"
+    {% endif %}
+    {% if environment.configs is defined and environment.configs[service_type] is defined %}
+    {{ service_type }} {
+    {% for key, value in environment.configs[service_type].items() %}
+      {% if value is string %}
+      {{ key }} = "{{ value }}"
+      {% else %}
+      {{ key }} = {{ value | lower }}
+      {% endif %}
+    {% endfor %}
+    }
+    {% endif %}
+    {% if service_type != 'flink' %}
+    public_access {
+      {{ service_type }} = true
+    }
+    {% endif %}
+  }
+}

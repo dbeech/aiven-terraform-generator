@@ -1,0 +1,9 @@
+.terraform
+.vscode
+output
+scratch
+venv
+terraform.tfstate*
+.terraform.lock.hcl
+.terraform.tfstate.lock.info
+main.tf
