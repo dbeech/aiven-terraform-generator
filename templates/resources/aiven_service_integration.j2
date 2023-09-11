@@ -1,14 +1,14 @@
-resource "aiven_service_integration" "{{ prefix | replace("-", "_")}}_integration_{{ service }}_{{ integration_type }}" {
+resource "aiven_service_integration" "{{ environment.prefix | replace("-", "_")}}_integration_{{ service }}_{{ integration_type }}" {
   project                  = "{{ environment.project }}"
   integration_type         = "{{ integration_type }}"
-  source_service_name      = aiven_{{ service }}.{{ prefix | replace("-", "_")}}_{{ service }}.service_name
+  source_service_name      = aiven_{{ service }}.{{ environment.prefix | replace("-", "_")}}_{{ service }}.service_name
   {% if integration_type == "metrics" or integration_type == "dashboard" %}
-  destination_service_name = aiven_{{ metrics_database }}.{{ prefix | replace("-", "_")}}_{{ metrics_database }}.service_name
+  destination_service_name = aiven_{{ metrics_database }}.{{ environment.prefix | replace("-", "_")}}_{{ metrics_database }}.service_name
   {% elif integration_type == "logs" %}
-  destination_service_name = aiven_opensearch.{{ prefix | replace("-", "_")}}_opensearch.service_name
+  destination_service_name = aiven_opensearch.{{ environment.prefix | replace("-", "_")}}_opensearch.service_name
   {% elif integration_type == "flink" or integration_type == "kafka_connect" %}
-  destination_service_name = aiven_{{ integration_type }}.{{ prefix | replace("-", "_")}}_{{ integration_type }}.service_name
+  destination_service_name = aiven_{{ integration_type }}.{{ environment.prefix | replace("-", "_")}}_{{ integration_type }}.service_name
   {% elif integration_type == "prometheus" or integration_type == "jolokia" %}
-  destination_endpoint_id = aiven_service_integration_endpoint.{{ prefix | replace("-", "_")}}_integration_endpoint_{{ integration_type }}.id
+  destination_endpoint_id = aiven_service_integration_endpoint.{{ environment.prefix | replace("-", "_")}}_integration_endpoint_{{ integration_type }}.id
   {% endif %}
 }

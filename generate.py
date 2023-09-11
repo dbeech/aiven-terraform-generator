@@ -12,6 +12,7 @@ from jinja2 import Environment, FileSystemLoader
 logger = logging.getLogger("aiven-terraform-generator")
 logging.basicConfig()
 
+default_prefix = "demo"
 default_service_plans = {
     "kafka_connect": "startup-4",
     "flink": "business-4",
@@ -19,7 +20,6 @@ default_service_plans = {
     "opensearch": "startup-4",
     "grafana": "startup-1",
 }
-
 default_versions = {"flink": "1.16", "kafka": "3.5", "pg": "14", "m3db": "1.5"}
 
 
@@ -73,6 +73,9 @@ def fill_in_gaps(context):
     services = defaultdict(str, environment["services"])
     integrations = defaultdict(list, environment["integrations"])
     integration_endpoints = set(environment["integration_endpoints"])
+
+    if not environment["prefix"]:
+        environment["prefix"] = default_prefix
 
     # If we've asked for Kafka Connect service but there's no Connect integration for Kafka, add one
     if "kafka_connect" in services:
@@ -173,13 +176,6 @@ def main():
         help="Path to the output directory",
     )
     parser.add_argument(
-        "-p",
-        "--prefix",
-        type=str,
-        default="tf-gen",
-        help="Prefix for generated resource names",
-    )
-    parser.add_argument(
         "--log-level",
         type=str,
         default="INFO",
@@ -200,7 +196,6 @@ def main():
     logger.info("Loading context from %s", args.input)
     with open(args.input, "r") as f:
         context = yaml.safe_load(f)
-        context["prefix"] = args.prefix
         context["version_numbers"] = default_versions
 
     # Validate and enrich the context with missing services/integrations if needed

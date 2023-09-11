@@ -1,5 +1,5 @@
 {% if environment.networking == 'vpc' or environment.networking == 'privatelink' %}
-resource "aiven_project_vpc" "{{ prefix | replace("-", "_")}}_project_vpc" {
+resource "aiven_project_vpc" "{{ environment.prefix | replace("-", "_")}}_project_vpc" {
   project                 = "{{ environment.project }}"
   cloud_name              = "{{ environment.cloud }}"
   network_cidr            = "10.0.0.0/22"

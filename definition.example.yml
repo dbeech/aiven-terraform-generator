@@ -1,4 +1,5 @@
 environment:
+  prefix: tf-gen
   project: dbeech-demo
   cloud: aws-eu-central-1
   networking: vpc

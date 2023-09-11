@@ -11,7 +11,7 @@ This script takes a simple environment file defined in yaml and converts it to T
 **Instructions to run:**
 
 ```
-usage: generate.py [-h] [-i INPUT] [-o OUTPUT] [-p PREFIX] [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
+usage: generate.py [-h] [-i INPUT] [-o OUTPUT] [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
 options:
   -h, --help            show this help message and exit
@@ -19,8 +19,6 @@ options:
                         Path to the input YML file
   -o OUTPUT, --output OUTPUT
                         Path to the output directory
-  -p PREFIX, --prefix PREFIX
-                        Prefix for generated resource names
   --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                         Set the logging level
 ```
@@ -29,6 +27,7 @@ options:
 
 ```yaml
 environment:
+  prefix: tf-gen
   project: dbeech-demo
   cloud: aws-eu-central-1
   networking: vpc

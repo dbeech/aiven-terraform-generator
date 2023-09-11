@@ -1,10 +1,10 @@
-resource "aiven_{{ service_type }}" "{{ prefix | replace("-", "_")}}_{{ service_type }}" {
+resource "aiven_{{ service_type }}" "{{ environment.prefix | replace("-", "_")}}_{{ service_type }}" {
   project                 = "{{ environment.project }}"
   cloud_name              = "{{ environment.cloud }}"
   plan                    = "{{ environment.services[service_type] }}"
-  service_name            = "{{ prefix }}-{{ service_type | replace("_", "-") }}"
+  service_name            = "{{ environment.prefix }}-{{ service_type | replace("_", "-") }}"
   {% if environment.networking == 'vpc' or environment.networking == 'privatelink' %}
-  project_vpc_id          = aiven_project_vpc.{{ prefix | replace("-", "_")}}_project_vpc.id
+  project_vpc_id          = aiven_project_vpc.{{ environment.prefix | replace("-", "_")}}_project_vpc.id
   {% endif %}
   {{ service_type }}_user_config {
     {% if service_type in version_numbers %}

@@ -1,6 +1,6 @@
-resource "aiven_service_integration_endpoint" "{{ prefix | replace("-", "_")}}_integration_endpoint_{{ integration_endpoint_type }}" {
+resource "aiven_service_integration_endpoint" "{{ environment.prefix | replace("-", "_")}}_integration_endpoint_{{ integration_endpoint_type }}" {
   project                  = "{{ environment.project }}"
-  endpoint_name            = "{{ prefix }}-endpoint-{{ integration_endpoint_type | replace("_", "-") }}"
+  endpoint_name            = "{{ environment.prefix }}-endpoint-{{ integration_endpoint_type | replace("_", "-") }}"
   endpoint_type            = "{{ integration_endpoint_type }}"
   {{ integration_endpoint_type }}_user_config {
     basic_auth_username = "{{ generate_random_string() }}"
