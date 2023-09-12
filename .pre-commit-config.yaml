@@ -31,3 +31,12 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+
+  - repo: local
+    hooks:
+      - id: generate-check
+        name: generate-check
+        entry: python generate.py -i definition.example.yml -o scratch
+        language: system
+        pass_filenames: false
+        always_run: true

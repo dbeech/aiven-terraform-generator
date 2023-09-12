@@ -1,13 +1,13 @@
 import argparse
 import logging
 import os
-import random
-import string
 import sys
 from collections import defaultdict
 
 import yaml
 from jinja2 import Environment, FileSystemLoader
+
+from utils import generate_random_string
 
 logger = logging.getLogger("aiven-terraform-generator")
 logging.basicConfig()
@@ -146,11 +146,6 @@ def fill_in_gaps(context):
     logger.debug("Enriched context: %s", context)
 
     return context
-
-
-def generate_random_string(length=8):
-    allowed_chars = string.ascii_lowercase + string.digits
-    return "".join(random.choice(allowed_chars) for _ in range(length))
 
 
 def main():

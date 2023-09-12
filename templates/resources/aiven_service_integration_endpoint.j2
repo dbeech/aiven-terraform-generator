@@ -1,9 +1,10 @@
-resource "aiven_service_integration_endpoint" "{{ environment.prefix | replace("-", "_")}}_integration_endpoint_{{ integration_endpoint_type }}" {
+{% set resource_name = environment.prefix | replace("-", "_") + "_integration_endpoint_" + integration_endpoint_type %}
+resource "aiven_service_integration_endpoint" {{ resource_name }}  {
   project                  = "{{ environment.project }}"
   endpoint_name            = "{{ environment.prefix }}-endpoint-{{ integration_endpoint_type | replace("_", "-") }}"
   endpoint_type            = "{{ integration_endpoint_type }}"
   {{ integration_endpoint_type }}_user_config {
-    basic_auth_username = "{{ generate_random_string() }}"
-    basic_auth_password = "{{ generate_random_string() }}"
+    basic_auth_username = "{{ generate_random_string(resource_name + '_username') }}"
+    basic_auth_password = "{{ generate_random_string(resource_name + '_password') }}"
   }
 }
